@@ -7,23 +7,27 @@ import java.util.regex.Pattern;
 public class calculator {
 	public static void main(String[] args) {
 
-		// Scanner in = new Scanner(System.in);
+		Scanner in = new Scanner(System.in);
 
-		// System.out.println("Введите данные: ");
+		System.out.println("Введите данные: ");
 
-		// String data = in.nextLine();
+		String data = in.nextLine();
 
-		// // String check_data = ("(\\+*)\\d{11}");
+		// String check_data = ("(\\+*)\\d{11}");
 
-		// Pattern pattern = Pattern.compile("\\d+(\\s*|\\+|-|\\*|/|\\s*)\\d+"); //
-		// правила поиска рег выр
-		// Matcher matcher = pattern.matcher(data);
+		Pattern pattern = Pattern.compile("\\d{1,2}\\s(\\+|-|\\*|/|)\\s\\d{1,2}"); // правила поиска рег выр
+		Matcher matcher = pattern.matcher(data);
 
+		if (matcher.find()) {
+			System.out.println(matcher.group());
+		} else {
+			System.out.println("Error");
+		}
 		// while (matcher.find())
-		// System.out.println(matcher.group());
+		// 	System.out.println(matcher.group());
 
-		System.out.println("56 ".matches("\\d{2}\\s"));
-		System.out.println("5 + 4".matches("\\d{1,2}\\s(\\+|-|\\*|/|)\\s\\d{1,2}"));
+		// System.out.println("56 ".matches("\\d{2}\\s"));
+		// System.out.println("5 + 4".matches("\\d{1,2}\\s(\\+|-|\\*|/|)\\s\\d{1,2}"));
 	}
 
 }
