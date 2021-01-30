@@ -14,7 +14,7 @@ public class calculator {
 																			// регулярные выражения
 
 		map_matchers.put("format", "[0-1]");
-		map_matchers.put("arab", "\\d{1,2}\\s(\\+|-|\\*|/|)\\s\\d{1,2}");
+		map_matchers.put("arab", "\\[0-1]\\s(\\+|-|\\*|/|)\\s\\[0-1]");
 		map_matchers.put("roman", "\\d{1,2}\\s(\\+|-|\\*|/|)\\s\\d{1,2}");
 
 		return (data_matcher.matches(map_matchers.get(name_variable))); // сравнение введенных пользователем данных и
@@ -25,36 +25,82 @@ public class calculator {
 	public static void main(String[] args) {
 
 		Scanner in = new Scanner(System.in);
-		String type_format;
+		String calculator_data;
+		Boolean type_format;
 
 		do {
-			System.out.print("Выберите формат чисел: Арабские/Римские(0/1): ");
-			type_format = in.nextLine();
-		} while (!resolution("format", type_format));
+			System.out.print("Выберите формат чисел: Арабские/Римские(1/0): ");
+			calculator_data = in.nextLine();
+			type_format = calculator_data.equals("1");
+		} while (!resolution("format", calculator_data));
 
-		// Pattern pattern = Pattern.compile("\\d{1,2}\\s(\\+|-|\\*|/|)\\s\\d{1,2}"); //
-		// правила поиска рег выр
-		// Matcher matcher = pattern.matcher(type_format);
+		System.out.print(
+				"Введите данные. Учтите, что калькулятор поддерживает лишь сложение, вычитание, умножение и деление чисел в диапазоне от нуля до десяти: ");
 
-		// System.out.print(type_format);
-		// String data = in.nextLine();
+		calculator_data = in.nextLine();
 
-		// String check_data = ("(\\+*)\\d{11}");
+		String name_variable = type_format ? "roman" : "arab";
+		while (!resolution(name_variable, calculator_data)) {
+			System.out.print("Допустимый формат ввода(х + у): ");
+			calculator_data = in.nextLine();
+		}
 
-		// Pattern pattern = Pattern.compile("\\d{1,2}\\s(\\+|-|\\*|/|)\\s\\d{1,2}"); //
-		// правила поиска рег выр
-		// Matcher matcher = pattern.matcher(data);
+		in.close();
 
-		// if (matcher.find()) {
-		// System.out.println(matcher.group());
-		// } else {
-		// System.out.println("Error");
-		// }
-		// while (matcher.find())
-		// System.out.println(matcher.group());
+		String[] symbols = calculator_data.split(" ");
 
-		// System.out.println("56 ".matches("\\d{2}\\s"));
-		// System.out.println("5 + 4".matches("\\d{1,2}\\s(\\+|-|\\*|/|)\\s\\d{1,2}"));
+		Innercalculator result = new Innercalculator(Integer.parseInt(symbols[0]), Integer.parseInt(symbols[2]));
+
+		System.out.print("Ответ: ");
+
+		switch (symbols[1]) {
+			case "+":
+				System.out.println(result.addition());
+				break;
+			case "-":
+				System.out.println(result.subtraction());
+				break;
+			case "*":
+				System.out.println(result.multiplication());
+				break;
+			case "/":
+				try {
+					if (Double.isInfinite(result.division())) {
+						throw new ArithmeticException("Не делите на ноль");
+					}
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+				break;
+		}
+	}
+}
+
+/**
+ * Innercalculator
+ */
+class Innercalculator {
+	public int var1;
+	public int var2;
+
+	Innercalculator(int var1, int var2) {
+		this.var1 = var1;
+		this.var2 = var2;
 	}
 
+	public int addition() {
+		return this.var1 + this.var2;
+	}
+
+	public int subtraction() {
+		return this.var1 - this.var2;
+	}
+
+	public int multiplication() {
+		return this.var1 * this.var2;
+	}
+
+	public double division() {
+		return ((double) this.var1 / this.var2);
+	}
 }
