@@ -40,18 +40,24 @@ public class calculator {
 		calculator_data = in.nextLine();
 
 		String name_variable = type_format ? "roman" : "arab";
-		while (!resolution(name_variable, calculator_data)) {
-			System.out.print("Допустимый формат ввода(х + у): ");
-			calculator_data = in.nextLine();
-		}
+		// while (!resolution(name_variable, calculator_data)) {
+		// System.out.print("Допустимый формат ввода(х + у): ");
+		// calculator_data = in.nextLine();
+		// }
 
-		in.close();
+		try {
+			if (!resolution(name_variable, calculator_data)) {
+				throw new NumberFormatException("Недопустимый формат введенных данных");
+			}
+			in.close();
+			// System.out.print("Ответ: ");
+		} catch (NumberFormatException e) {
+			System.out.println(e.getMessage());
+		}
 
 		String[] symbols = calculator_data.split(" ");
 
 		Innercalculator result = new Innercalculator(Integer.parseInt(symbols[0]), Integer.parseInt(symbols[2]));
-
-		System.out.print("Ответ: ");
 
 		switch (symbols[1]) {
 			case "+":
@@ -68,7 +74,8 @@ public class calculator {
 					if (Double.isInfinite(result.division())) {
 						throw new ArithmeticException("Не делите на ноль");
 					}
-				} catch (Exception e) {
+					System.out.println(result.division());
+				} catch (ArithmeticException e) {
 					System.out.println(e.getMessage());
 				}
 				break;
