@@ -19,7 +19,7 @@ public class calculator {
 
 		map_matchers.put("format", "[0-1]");
 		map_matchers.put("arab", "\\d{1,2}\\s(\\+|-|\\*|/|)\\s\\d{1,2}");
-		map_matchers.put("roman", "");
+		map_matchers.put("roman", "(X|IX|IV|V?I{0,3})\\s(\\+|-|\\*|/|)\\s(X|IX|IV|V?I{0,3})");
 
 		return (data_matcher.matches(map_matchers.get(name_variable))); // сравнение введенных пользователем данных и
 																		// рег выр в карте, найденном по ключу(имени,
@@ -46,80 +46,69 @@ public class calculator {
 		try {
 			calculator_data = in.nextLine();
 			in.close();
-			// System.out.println(resolution(name_variable, calculator_data));
+
 			if (!resolution(name_variable, calculator_data)) {
 				throw new Exception("Недопустимый формат введенных данных");
 			}
-			// System.out.print("Ответ: ");
+
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 
 		String[] symbols = calculator_data.split(" ");
-
 		int var1, var2;
 
-		if (type_format) {
+		if (Boolean.TRUE.equals(type_format)) { // здесь всячески приводим разные данные к числовому типу
 			var1 = Integer.parseInt(symbols[0]);
 			var2 = Integer.parseInt(symbols[2]);
-			// result = new Innercalculator(Integer.parseInt(symbols[0]),
-			// Integer.parseInt(symbols[2]));
 		} else {
-			var1 = InnercalculatorRoman.convert_to_roman(symbols[0]);
-			var2 = InnercalculatorRoman.convert_to_roman(symbols[2]);
-			// result = new Innercalculator(var1, var2);
+			var1 = SymbolsRoman.convert_to_roman(symbols[0]);
+			var2 = SymbolsRoman.convert_to_roman(symbols[2]);
 		}
 
 		Innercalculator result;
 		result = new Innercalculator(var1, var2);
 
 		IntegerConverter int_converter = new IntegerConverter();
-		int output = 0;
+		double output = 0;
 
 		switch (symbols[1]) {
 			case "+":
 				output = result.addition();
-				// System.out.println(result.addition());
-				// output = type_format ? Integer.toString(result.addition()) :
-				// int_converter.intToRoman(result.addition());
 				break;
 			case "-":
 				output = result.subtraction();
-				// System.out.println(result.subtraction());
-
 				break;
 			case "*":
 				output = result.multiplication();
-				// System.out.println(result.multiplication());
-
 				break;
 			case "/":
 				try {
 					if (Double.isInfinite(result.division())) {
 						throw new ArithmeticException("Не делите на ноль");
 					}
-					// output = result.division();
-					// System.out.println(result.division());
-
+					output = result.division();
+					// output += double_var;
 				} catch (ArithmeticException e) {
 					System.out.println(e.getMessage());
+					output = Double.NaN;
 				}
 				break;
 		}
 
-		if (type_format) {
+		if (Boolean.TRUE.equals(type_format)) { // вывод в зависимости от типа алфавита
 			System.out.println("Ответ: " + output);
 		} else {
-			System.out.println("Ответ: " + int_converter.intToRoman(output));
+			System.out.println("Ответ: " + int_converter.intToRoman((int) output)); // перед выводом преобразовывается в
+																					// римское число
 		}
-		// System.out.println("Ответ: " + int_converter.intToRoman(output));
 	}
 }
 
 /**
  * Innercalculator
  */
-class Innercalculator {
+class Innercalculator { // тут мат вычисления
 	private int var1;
 	private int var2;
 
@@ -141,14 +130,14 @@ class Innercalculator {
 	}
 
 	public double division() {
-		return ((double) this.var1 / this.var2);
+		return (double) this.var1 / this.var2;
 	}
 }
 
 /**
  * Innercalculator_Roma
  */
-class InnercalculatorRoman {
+class SymbolsRoman { // ключ-значение для интерпритации введенных римскими символами данных
 	public static int convert_to_roman(String var) {
 		Map<String, Integer> roman_symbols = new HashMap<String, Integer>();
 		roman_symbols.put("I", 1);
@@ -166,8 +155,10 @@ class InnercalculatorRoman {
 	}
 }
 
-class IntegerConverter {
+class IntegerConverter { // это я не совсем понимаю, взял на википедии и немного урезал диапазон знчений,
+							// т.к. больше ста калькулятор не выдаст
 	public static String intToRoman(int number) {
+
 		StringBuilder result = new StringBuilder();
 		for (Integer key : units.descendingKeySet()) {
 			while (number >= key) {
@@ -181,10 +172,6 @@ class IntegerConverter {
 	private static final NavigableMap<Integer, String> units;
 	static {
 		NavigableMap<Integer, String> initMap = new TreeMap<>();
-		initMap.put(1000, "M");
-		initMap.put(900, "CM");
-		initMap.put(500, "D");
-		initMap.put(400, "CD");
 		initMap.put(100, "C");
 		initMap.put(90, "XC");
 		initMap.put(50, "L");
@@ -194,6 +181,7 @@ class IntegerConverter {
 		initMap.put(5, "V");
 		initMap.put(4, "IV");
 		initMap.put(1, "I");
+		// initMap.put(0, "N"); ???
 		units = Collections.unmodifiableNavigableMap(initMap);
 	}
 }
