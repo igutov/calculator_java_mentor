@@ -70,28 +70,35 @@ public class calculator {
 		result = new Innercalculator(var1, var2);
 
 		IntegerConverter int_converter = new IntegerConverter();
-		double output = 0;
+		int output = 0;
 
 		switch (symbols[1]) {
 			case "+":
 				output = result.addition();
 				break;
 			case "-":
-				output = result.subtraction();
+				// output = result.subtraction();
+				if (Boolean.TRUE.equals(type_format)) {
+					output = result.subtraction();
+				} else {
+					try {
+						if (output <= 0)
+							throw new Exception("Отрицательные и нулевые значения вычислений недопустимы");
+					} catch (Exception e) {
+						System.out.println(e.getMessage());
+						System.exit(0);
+					}
+				}
 				break;
 			case "*":
 				output = result.multiplication();
 				break;
 			case "/":
 				try {
-					if (Double.isInfinite(result.division())) {
-						throw new ArithmeticException("Не делите на ноль");
-					}
 					output = result.division();
-					// output += double_var;
 				} catch (ArithmeticException e) {
 					System.out.println(e.getMessage());
-					output = Double.NaN;
+					System.exit(0);
 				}
 				break;
 		}
@@ -99,8 +106,8 @@ public class calculator {
 		if (Boolean.TRUE.equals(type_format)) { // вывод в зависимости от типа алфавита
 			System.out.println("Ответ: " + output);
 		} else {
-			System.out.println("Ответ: " + int_converter.intToRoman((int) output)); // перед выводом преобразовывается в
-																					// римское число
+			System.out.println("Ответ: " + int_converter.intToRoman(output)); // перед выводом преобразовывается в
+																				// римское число
 		}
 	}
 }
@@ -129,8 +136,8 @@ class Innercalculator { // тут мат вычисления
 		return this.var1 * this.var2;
 	}
 
-	public double division() {
-		return (double) this.var1 / this.var2;
+	public int division() {
+		return this.var1 / this.var2;
 	}
 }
 
