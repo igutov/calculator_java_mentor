@@ -12,16 +12,15 @@ import java.util.HashMap;
 
 public class calculator {
 
-	public static boolean resolution(String name_variable, String data_matcher) { // подаются введенные пользователем
-																					// данные для проверки валидности
+	public static boolean resolution(String type_format, String data_matcher) { // подаются введенные пользователем
+																				// данные для проверки валидности
 		Map<String, String> map_matchers = new HashMap<String, String>(); // карта с парой ключ-значение содержащая
 																			// регулярные выражения
 
-		map_matchers.put("format", "[0-1]");
 		map_matchers.put("arab", "\\d{1,2}\\s(\\+|-|\\*|/|)\\s\\d{1,2}");
 		map_matchers.put("roman", "(X|IX|IV|V?I{0,3})\\s(\\+|-|\\*|/|)\\s(X|IX|IV|V?I{0,3})");
 
-		return (data_matcher.matches(map_matchers.get(name_variable))); // сравнение введенных пользователем данных и
+		return (data_matcher.matches(map_matchers.get(type_format))); // сравнение введенных пользователем данных и
 																		// рег выр в карте, найденном по ключу(имени,
 																		// переданном при вызове метода resolution())
 	}
@@ -30,35 +29,35 @@ public class calculator {
 
 		Scanner in = new Scanner(System.in);
 		String calculator_data;
-		Boolean type_format;
-
-		do {
-			System.out.print("Выберите формат чисел: Арабские/Римские(1/0): ");
-			calculator_data = in.nextLine();
-			type_format = calculator_data.equals("1");
-		} while (!resolution("format", calculator_data));
+		String[] symbols;
+		String type_format;
+		int var1, var2;
 
 		System.out.print(
 				"Введите данные. Учтите, что калькулятор поддерживает лишь сложение, вычитание, умножение и деление чисел в диапазоне от нуля до десяти: ");
 
-		String name_variable = type_format ? "arab" : "roman";
+		calculator_data = in.nextLine();
+		in.close();
+
+		symbols = calculator_data.split(" ");
+
+		if ((symbols[0].matches("\\d+")) && (symbols[2].matches("\\d+"))) {
+			type_format = "arab";
+		} else {
+			type_format = "roman";
+		}
 
 		try {
-			calculator_data = in.nextLine();
-			in.close();
-
-			if (!resolution(name_variable, calculator_data)) {
+			if (!resolution(type_format, calculator_data)) {
 				throw new Exception("Недопустимый формат введенных данных");
 			}
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
+			System.exit(0);
 		}
 
-		String[] symbols = calculator_data.split(" ");
-		int var1, var2;
-
-		if (Boolean.TRUE.equals(type_format)) { // здесь всячески приводим разные данные к числовому типу
+		if (type_format == "arab") { // здесь всячески приводим разные данные к числовому типу
 			var1 = Integer.parseInt(symbols[0]);
 			var2 = Integer.parseInt(symbols[2]);
 		} else {
@@ -77,10 +76,10 @@ public class calculator {
 				output = result.addition();
 				break;
 			case "-":
-				// output = result.subtraction();
-				if (Boolean.TRUE.equals(type_format)) {
-					output = result.subtraction();
-				} else {
+				output = result.subtraction();
+
+				if (type_format == "roman") {
+
 					try {
 						if (output <= 0)
 							throw new Exception("Отрицательные и нулевые значения вычислений недопустимы");
@@ -103,7 +102,7 @@ public class calculator {
 				break;
 		}
 
-		if (Boolean.TRUE.equals(type_format)) { // вывод в зависимости от типа алфавита
+		if (type_format == "arab") { // вывод в зависимости от типа алфавита
 			System.out.println("Ответ: " + output);
 		} else {
 			System.out.println("Ответ: " + int_converter.intToRoman(output)); // перед выводом преобразовывается в
